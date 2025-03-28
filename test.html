@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Elements to Table</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+  <h3>Form elements to Table</h3>
+  
+  <div class="row">
+    <div class="col-md-offset-1 col-md-5">
+      <form>
+        <label for="id">ID</label>
+        <input class="form-control" type="text" name="id" id="id">
+        
+        <label for="name">Name</label>
+        <input class="form-control" type="text" name="name" id="name">
+        
+        <label for="salary">Salary</label>
+        <input class="form-control" type="text" name="salary" id="salary">
+        
+        <input class="btn btn-primary pull-right append" type="button" name="append" value="Add">
+      </form>
+      <br>
+    </div>
+  </div>
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Salary</th>
+        <th>Action</th> <!-- Added action column for Delete button -->
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Empty Table, no initial rows -->
+    </tbody>
+  </table>
+
+  <!-- Hidden input field to store table data as an array -->
+  <input type="hidden" id="tableData" name="tableData">
+
+  <script>
+    $(document).ready(function() {
+      // Variable to store table data
+      var tableData = [];
+
+      // Event listener for the "Add" button
+      $('form').on('click', 'input.append', function(event) {
+        event.preventDefault();
+        
+        // Get form values (ID, Name, Salary)
+        var id = $('input[name="id"]').val();
+        var name = $('input[name="name"]').val();
+        var salary = $('input[name="salary"]').val();
+        
+        // Create the new table row with a Delete button
+        var row = '<tr>';
+        row += '<td>' + id + '</td>' +
+               '<td>' + name + '</td>' +
+               '<td>' + salary + '</td>' +
+               '<td><button class="btn btn-danger delete-btn">Delete</button></td>';  // Delete button added
+        row += '</tr>';
+        
+        // Add the row to the table
+        $('table tbody').append(row);
+
+        // Store the row data in the tableData array (each row is a sub-array)
+        tableData.push([id, name, salary]);
+
+        // Update the hidden input field with the table data in JSON format
+        var tableDataJson = JSON.stringify(tableData);
+        $('#tableData').val(tableDataJson);
+
+        // Log the table data to the console (for debugging)
+        console.log("Current Table Data (JSON):", tableDataJson);
+
+        // Clear the form fields after adding the row
+        $('input[name="id"]').val("");
+        $('input[name="name"]').val("");
+        $('input[name="salary"]').val("");
+      });
+
+      // Event listener for the Delete button
+      $('table').on('click', '.delete-btn', function(event) {
+        var row = $(this).closest('tr');
+        var rowIndex = row.index(); // Get the index of the row to delete
+        
+        // Remove the row from the table
+        row.remove();
+
+        // Remove the corresponding data from the tableData array
+        tableData.splice(rowIndex, 1);
+
+        // Update the hidden input field with the updated table data
+        var tableDataJson = JSON.stringify(tableData);
+        $('#tableData').val(tableDataJson);
+
+        // Log the updated table data to the console (for debugging)
+        console.log("Updated Table Data (JSON):", tableDataJson);
+      });
+    });
+  </script>
+
+</body>
+</html>
